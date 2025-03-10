@@ -1,0 +1,7 @@
+services:
+  - name: name
+    git: git_url
+    working_dir: /absoulute/dir
+    script: 
+      - echo "Hello"
+  
