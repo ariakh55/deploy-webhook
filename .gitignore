@@ -22,3 +22,4 @@ venv/
 .venv/
 .env
 deploy.yml
+.tmp-repo
