@@ -142,10 +142,6 @@ def callback():
     return run_ci(service_name, response)
 
 
-def main():
-    run(host="0.0.0.0", port=3060, debug=True)
-
-
 # This is for local dev
 # if __name__ == "__main__":
 #     main()
