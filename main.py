@@ -37,7 +37,9 @@ def checkout_git_repo(service):
     if not path.exists(service["working_dir"]):
         yield f"Working directory {service['working_dir']} does not exist\n"
         yield "Cloning repo in desired directory\n"
-        repo = Repo.clone_from(url=build_string(service["git"]), to_path=service["working_dir"])
+        repo = Repo.clone_from(
+            url=build_string(service["git"]), to_path=service["working_dir"]
+        )
     else:
         repo = Repo(service["working_dir"])
 
@@ -140,5 +142,10 @@ def callback():
     return run_ci(service_name, response)
 
 
-if __name__ == "__main__":
+def main():
     run(host="0.0.0.0", port=3060, debug=True)
+
+
+# This is for local dev
+# if __name__ == "__main__":
+#     main()
