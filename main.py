@@ -5,7 +5,7 @@ from string import Formatter
 
 import yaml
 from git import Repo
-from bottle import post, run, request, response
+from bottle import Bottle, post, run, request, response
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -37,9 +37,7 @@ def checkout_git_repo(service):
     if not path.exists(service["working_dir"]):
         yield f"Working directory {service['working_dir']} does not exist\n"
         yield "Cloning repo in desired directory\n"
-        repo = Repo.clone_from(
-            url=build_string(service["git"]), to_path=service["working_dir"]
-        )
+        repo = Repo.clone_from(url=build_string(service["git"]), to_path=service["working_dir"])
     else:
         repo = Repo(service["working_dir"])
 
@@ -117,8 +115,7 @@ def run_ci(service_name, response):
     yield f"service {service_name} deployed\n"
 
 
-@post("/deploy")
-def callback():
+def deploy():
     auth_key = getenv("DEPLOY_WH_SECRET")
     if not auth_key:
         return "Service not setup correctly"
@@ -141,7 +138,16 @@ def callback():
     response.content_type = "text/plain"
     return run_ci(service_name, response)
 
+app = Bottle()
+
+@app.post("/deploy")
+def wsgi_callback():
+    deploy()
+
+@post("/deploy")
+def callback():
+    deploy()
 
 # This is for local dev
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    run(host="0.0.0.0", port=3060, debug=True)
