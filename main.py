@@ -1,6 +1,6 @@
 from datetime import time
 import subprocess
-from os import chmod, getenv, mkdir, path, remove
+from os import chmod, environ, getenv, mkdir, path, remove
 from string import Formatter
 
 import yaml
@@ -9,7 +9,6 @@ from bottle import Bottle, post, run, request, response
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 def get_template_var(text: str):
     return [i[1] for i in Formatter().parse(text) if i[1] is not None]
@@ -85,6 +84,7 @@ def run_script(service):
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
+            env=environ
         )
 
         for line in process.stdout:
