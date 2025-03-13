@@ -140,13 +140,17 @@ def deploy():
 
 app = Bottle()
 
+@app.get("/health")
+def wgsi_callback():
+    return "Hello, Im alive"
+
 @app.post("/deploy")
 def wsgi_callback():
-    deploy()
+    return deploy()
 
 @post("/deploy")
 def callback():
-    deploy()
+    return deploy()
 
 # This is for local dev
 if __name__ == "__main__":
