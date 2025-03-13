@@ -1,6 +1,6 @@
 from datetime import time
 import subprocess
-from os import chmod, getenv, path, remove
+from os import chmod, getenv, mkdir, path, remove
 from string import Formatter
 
 import yaml
@@ -20,6 +20,12 @@ def build_string(template: str):
     return template.format(**{var: getenv(var.upper()) for var in variables})
 
 
+def create_directory(dir_path: str):
+    absolute_path = path.abspath(dir_path)
+    if not path.exists(absolute_path):
+        mkdir(absolute_path)
+
+
 def get_service(service_name):
     with open("deploy.yml", "r") as stream:
         loaded_file = yaml.load(stream, yaml.Loader)
@@ -37,7 +43,9 @@ def checkout_git_repo(service):
     if not path.exists(service["working_dir"]):
         yield f"Working directory {service['working_dir']} does not exist\n"
         yield "Cloning repo in desired directory\n"
-        repo = Repo.clone_from(url=build_string(service["git"]), to_path=service["working_dir"])
+        repo = Repo.clone_from(
+            url=build_string(service["git"]), to_path=service["working_dir"]
+        )
     else:
         repo = Repo(service["working_dir"])
 
@@ -48,7 +56,10 @@ def checkout_git_repo(service):
 
 
 def run_script(service):
-    script_path = f"/tmp/deploy_script_{service['name']}_{str(time())}.sh"
+    create_directory("./.tmp-repo")
+    script_path = path.abspath(
+        f"./.tmp-repo/deploy_script_{service['name']}_{str(time())}.sh"
+    )
     script_file = None
     process = None
 
@@ -138,19 +149,24 @@ def deploy():
     response.content_type = "text/plain"
     return run_ci(service_name, response)
 
+
 app = Bottle()
+
 
 @app.get("/health")
 def wgsi_callback():
     return "Hello, Im alive"
 
+
 @app.post("/deploy")
 def wsgi_callback():
     return deploy()
 
+
 @post("/deploy")
 def callback():
     return deploy()
+
 
 # This is for local dev
 if __name__ == "__main__":
