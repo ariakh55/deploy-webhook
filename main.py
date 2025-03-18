@@ -54,7 +54,6 @@ def checkout_git_repo(service):
         repo.git.reset('--hard')
         repo.heads.master.checkout()
         repo.git.reset('--hard')
-        repo.git.clean('-xdf')
 
     remote.pull(depth=25)
     yield "Update complete\n"
