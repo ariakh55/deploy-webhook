@@ -50,6 +50,12 @@ def checkout_git_repo(service):
 
     remote = repo.remote("origin")
     yield "Getting updates...\n"
+    if service.get('git_force') and service['git_force'] == True:
+        repo.git.reset('--hard')
+        repo.heads.master.checkout()
+        repo.git.reset('--hard')
+        repo.git.clean('-xdf')
+
     remote.pull(depth=25)
     yield "Update complete\n"
 

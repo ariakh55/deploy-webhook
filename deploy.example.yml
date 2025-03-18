@@ -1,6 +1,7 @@
 services:
   - name: name
     git: git_url
+    git_force: false
     working_dir: /absoulute/dir
     script: 
       - echo "Hello"
